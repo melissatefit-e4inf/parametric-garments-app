@@ -1,0 +1,62 @@
+     <!DOCTYPE html>
+     <html lang="fr">
+     <head>
+         <meta charset="UTF-8">
+         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <title>Parametric Garments - Config T-Shirt</title>
+         <link rel="stylesheet" href="assets/css/style.css">
+     </head>
+     <body>
+         <header>
+             <h1>Configurez Votre T-Shirt</h1>
+             <p>Ajustez les paramètres pour un aperçu 3D et un patron de couture.</p>
+         </header>
+
+         <main>
+             <!-- Section Paramètres -->
+             <section id="params">
+                 <h2>Paramètres du Vêtement</h2>
+                 <div class="param-group">
+                     <label>Longueur des Manches (%): 
+                         <input type="range" id="sleeve-length" min="0" max="100" value="50">
+                         <span id="sleeve-length-val">50</span>%
+                     </label>
+                     <label>Ouverture des Manches (%): 
+                         <input type="range" id="sleeve-opening" min="0" max="100" value="40">
+                         <span id="sleeve-opening-val">40</span>%
+                     </label>
+                     <label>Longueur du Torse (%): 
+                         <input type="range" id="torso-length" min="0" max="100" value="70">
+                         <span id="torso-length-val">70</span>%
+                     </label>
+                     <label>Encolure (%): 
+                         <input type="range" id="neckline" min="0" max="100" value="30">
+                         <span id="neckline-val">30</span>%
+                     </label>
+                     <label>Coupe: 
+                         <select id="fit">
+                             <option value="loose">Loose (Aisée)</option>
+                             <option value="regular" selected>Regular (Normale)</option>
+                             <option value="tight">Tight (Ajustée)</option>
+                         </select>
+                     </label>
+                 </div>
+             </section>
+
+             <!-- Bouton Action -->
+             <button id="generate-btn">Générer Patron & Aperçu 3D</button>
+
+             <!-- Zone Preview 3D (à implémenter Étape 3) -->
+             <section id="preview">
+                 <h2>Aperçu 3D</h2>
+                 <canvas id="three-canvas" width="400" height="300"></canvas>
+                 <p id="status">Aperçu mis à jour en temps réel.</p>
+             </section>
+         </main>
+
+         <script src="assets/js/main.js"></script>
+         <!-- Three.js CDN (pour 3D, ajouté Étape 3) -->
+         <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> -->
+     </body>
+     </html>
+     
