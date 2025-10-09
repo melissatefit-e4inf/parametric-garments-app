@@ -1,6 +1,4 @@
 from fastapi import FastAPI
-<<<<<<< HEAD
-=======
 from pydantic import BaseModel
 from scripts.simple_generator import generate_tshirt_pattern
 import os
@@ -40,7 +38,6 @@ def generate_pattern(params: TShirtParams):
         "message": "Patron généré avec succès 🎉",
         "path": output_path.replace("\\", "/")
     }
->>>>>>> 3de4ee1 (Ajout des dernières modifications backend)
 
 app = FastAPI()
 
