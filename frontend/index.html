@@ -1,62 +1,326 @@
-     <!DOCTYPE html>
-     <html lang="fr">
-     <head>
-         <meta charset="UTF-8">
-         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-         <title>Parametric Garments - Config T-Shirt</title>
-         <link rel="stylesheet" href="assets/css/style.css">
-     </head>
-     <body>
-         <header>
-             <h1>Configurez Votre T-Shirt</h1>
-             <p>Ajustez les paramètres pour un aperçu 3D et un patron de couture.</p>
-         </header>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-Shirt Customizer - Parametric Garments</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="brand">
+                    <i class="fas fa-ruler-combined"></i>
+                    <h1>T-SHIRT CUSTOMIZER</h1>
+                </div>
+                <p class="tagline">Craft Your Perfect Fit - Step by Step</p>
+            </div>
+        </header>
 
-         <main>
-             <!-- Section Paramètres -->
-             <section id="params">
-                 <h2>Paramètres du Vêtement</h2>
-                 <div class="param-group">
-                     <label>Longueur des Manches (%): 
-                         <input type="range" id="sleeve-length" min="0" max="100" value="50">
-                         <span id="sleeve-length-val">50</span>%
-                     </label>
-                     <label>Ouverture des Manches (%): 
-                         <input type="range" id="sleeve-opening" min="0" max="100" value="40">
-                         <span id="sleeve-opening-val">40</span>%
-                     </label>
-                     <label>Longueur du Torse (%): 
-                         <input type="range" id="torso-length" min="0" max="100" value="70">
-                         <span id="torso-length-val">70</span>%
-                     </label>
-                     <label>Encolure (%): 
-                         <input type="range" id="neckline" min="0" max="100" value="30">
-                         <span id="neckline-val">30</span>%
-                     </label>
-                     <label>Coupe: 
-                         <select id="fit">
-                             <option value="loose">Loose (Aisée)</option>
-                             <option value="regular" selected>Regular (Normale)</option>
-                             <option value="tight">Tight (Ajustée)</option>
-                         </select>
-                     </label>
-                 </div>
-             </section>
+        <main class="main-content">
+            <!-- Section Configuration avec Stepper -->
+            <section class="config-section">
+                <!-- Stepper Horizontal -->
+                <div class="stepper">
+                    <div class="stepper-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <div class="stepper-steps">
+                        <div class="step active" data-step="1">
+                            <div class="step-icon">
+                                <i class="fas fa-tshirt"></i>
+                            </div>
+                            <span class="step-label">Sleeves</span>
+                        </div>
+                        <div class="step" data-step="2">
+                            <div class="step-icon">
+                                <i class="fas fa-ruler-vertical"></i>
+                            </div>
+                            <span class="step-label">Fit</span>
+                        </div>
+                        <div class="step" data-step="3">
+                            <div class="step-icon">
+                                <i class="fas fa-circle"></i>
+                            </div>
+                            <span class="step-label">Neckline</span>
+                        </div>
+                        <div class="step" data-step="4">
+                            <div class="step-icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <span class="step-label">Export</span>
+                        </div>
+                    </div>
+                </div>
 
-             <!-- Bouton Action -->
-             <button id="generate-btn">Générer Patron & Aperçu 3D</button>
+                <!-- Étape 1: SLEEVES -->
+                <div class="step-content active" data-step="1">
+                    <div class="step-header">
+                        <h2><i class="fas fa-tshirt"></i> SLEEVES CONFIGURATION</h2>
+                        <p>Adjust the sleeve length and opening</p>
+                    </div>
 
-             <!-- Zone Preview 3D (à implémenter Étape 3) -->
-             <section id="preview">
-                 <h2>Aperçu 3D</h2>
-                 <canvas id="three-canvas" width="400" height="300"></canvas>
-                 <p id="status">Aperçu mis à jour en temps réel.</p>
-             </section>
-         </main>
+                    <div class="param-controls">
+                        <div class="param-item">
+                            <label class="param-label">
+                                <span class="param-name">Sleeve Length</span>
+                                <span class="param-value" id="sleeve-length-val">SHORT (20cm)</span>
+                            </label>
+                            <input type="range" id="sleeve-length" class="modern-slider" min="15" max="35" value="20">
+                            <div class="slider-labels">
+                                <span>Short</span>
+                                <span>Long</span>
+                            </div>
+                        </div>
 
-         <script src="assets/js/main.js"></script>
-         <!-- Three.js CDN (pour 3D, ajouté Étape 3) -->
-         <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> -->
-     </body>
-     </html>
-     
+                        <div class="param-item">
+                            <label class="param-label">
+                                <span class="param-name">Sleeve Opening</span>
+                                <span class="param-value" id="sleeve-opening-val">REGULAR (30cm)</span>
+                            </label>
+                            <input type="range" id="sleeve-opening" class="modern-slider" min="25" max="40" value="30">
+                            <div class="slider-labels">
+                                <span>Narrow</span>
+                                <span>Wide</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button class="btn-next" onclick="nextStep(2)">
+                            Continue to Fit & Length
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Étape 2: FIT & LENGTH -->
+                <div class="step-content" data-step="2">
+                    <div class="step-header">
+                        <h2><i class="fas fa-ruler-vertical"></i> FIT & LENGTH</h2>
+                        <p>Configure the torso length and overall fit</p>
+                    </div>
+
+                    <div class="param-controls">
+                        <div class="param-item">
+                            <label class="param-label">
+                                <span class="param-name">Torso Length</span>
+                                <span class="param-value" id="torso-length-val">REGULAR (65cm)</span>
+                            </label>
+                            <input type="range" id="torso-length" class="modern-slider" min="55" max="80" value="65">
+                            <div class="slider-labels">
+                                <span>Short</span>
+                                <span>Long</span>
+                            </div>
+                        </div>
+
+                        <div class="param-item">
+                            <label class="param-label">
+                                <span class="param-name">Type of Fit</span>
+                            </label>
+                            <div class="fit-options">
+                                <button class="fit-option active" data-value="regular">
+                                    <i class="fas fa-user"></i>
+                                    Regular
+                                </button>
+                                <button class="fit-option" data-value="oversize">
+                                    <i class="fas fa-tshirt"></i>
+                                    Oversize
+                                </button>
+                                <button class="fit-option" data-value="slim">
+                                    <i class="fas fa-arrows-alt-h"></i>
+                                    Slim
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button class="btn-prev" onclick="prevStep(1)">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Sleeves
+                        </button>
+                        <button class="btn-next" onclick="nextStep(3)">
+                            Continue to Neckline
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Étape 3: NECKLINE -->
+                <div class="step-content" data-step="3">
+                    <div class="step-header">
+                        <h2><i class="fas fa-circle"></i> NECKLINE CONFIGURATION</h2>
+                        <p>Choose your preferred neckline style</p>
+                    </div>
+
+                    <div class="param-controls">
+                        <div class="param-item">
+                            <label class="param-label">
+                                <span class="param-name">Neckline Depth</span>
+                                <span class="param-value" id="neckline-val">ROUND (8cm)</span>
+                            </label>
+                            <input type="range" id="neckline" class="modern-slider" min="5" max="15" value="8">
+                            <div class="slider-labels">
+                                <span>Shallow</span>
+                                <span>Deep</span>
+                            </div>
+                        </div>
+
+                        <div class="param-item">
+                            <label class="param-label">
+                                <span class="param-name">Type of Collar</span>
+                            </label>
+                            <div class="collar-options">
+                                <button class="collar-option active" data-value="crew">
+                                    <i class="fas fa-circle"></i>
+                                    Crew Neck
+                                </button>
+                                <button class="collar-option" data-value="vneck">
+                                    <i class="fas fa-play"></i>
+                                    V-Neck
+                                </button>
+                                <button class="collar-option" data-value="round">
+                                    <i class="fas fa-circle-notch"></i>
+                                    Round
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-actions">
+                        <button class="btn-prev" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Fit
+                        </button>
+                        <button class="btn-next" onclick="nextStep(4)">
+                            Review & Generate
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Étape 4: EXPORT -->
+                <div class="step-content" data-step="4">
+                    <div class="step-header">
+                        <h2><i class="fas fa-download"></i> READY TO EXPORT</h2>
+                        <p>Review your configuration and generate sewing patterns</p>
+                    </div>
+
+                    <!-- Récapitulatif des choix -->
+                    <div class="summary">
+                        <div class="summary-item">
+                            <i class="fas fa-tshirt"></i>
+                            <div class="summary-content">
+                                <strong>Sleeves</strong>
+                                <span>Length: <span id="summary-sleeve-length">20cm</span> • Opening: <span id="summary-sleeve-opening">30cm</span></span>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-ruler-vertical"></i>
+                            <div class="summary-content">
+                                <strong>Fit & Length</strong>
+                                <span>Torso: <span id="summary-torso-length">65cm</span> • Fit: <span id="summary-fit">Regular</span></span>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-circle"></i>
+                            <div class="summary-content">
+                                <strong>Neckline</strong>
+                                <span>Depth: <span id="summary-neckline">8cm</span> • Style: <span id="summary-collar">Crew Neck</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="export-options">
+                        <div class="format-options">
+                            <label class="format-option">
+                                <input type="radio" name="format" value="svg" checked>
+                                <i class="fas fa-vector-square"></i>
+                                <span>SVG Format</span>
+                                <small>Vector, editable</small>
+                            </label>
+                            <label class="format-option">
+                                <input type="radio" name="format" value="pdf">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>PDF Format</span>
+                                <small>Ready to print</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="step-actions export-actions">
+                        <button class="btn-prev" onclick="prevStep(3)">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Neckline
+                        </button>
+                        <button class="btn-generate" id="generate-btn">
+                            <i class="fas fa-magic"></i>
+                            Generate Pattern (SVG/PDF)
+                        </button>
+                    </div>
+
+                    <div class="export-info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Download ready-to-print sewing patterns with precise measurements</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Preview 3D (toujours visible) -->
+            <section class="preview-section">
+                <div class="preview-header">
+                    <h2><i class="fas fa-cube"></i> LIVE 3D PREVIEW</h2>
+                    <div class="preview-controls">
+                        <button class="preview-control" id="rotate-view">
+                            <i class="fas fa-sync-alt"></i>
+                            Rotate
+                        </button>
+                        <button class="preview-control" id="reset-view">
+                            <i class="fas fa-redo"></i>
+                            Reset View
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="preview-container">
+                    <canvas id="three-canvas"></canvas>
+                    <div class="preview-overlay">
+                        <div class="loading-spinner hidden" id="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Updating 3D preview...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="current-config">
+                    <h3>Current Configuration</h3>
+                    <div class="config-display">
+                        <div class="config-item">
+                            <span class="config-label">Sleeves:</span>
+                            <span class="config-value" id="current-sleeves">20cm / 30cm</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Torso:</span>
+                            <span class="config-value" id="current-torso">65cm</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Fit:</span>
+                            <span class="config-value" id="current-fit">Regular</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Neckline:</span>
+                            <span class="config-value" id="current-neckline">Crew Neck (8cm)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
