@@ -194,6 +194,9 @@ body {
     background: var(--border);
     outline: none;
     -webkit-appearance: none;
+-moz-appearance: none;
+appearance: none;
+
 }
 
 .modern-slider::-webkit-slider-thumb {
