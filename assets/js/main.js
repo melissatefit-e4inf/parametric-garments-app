@@ -1,5 +1,3 @@
-// assets/js/main.js
-
 class GarmentsWizard {
     constructor() {
         this.currentStep = 1;
@@ -13,13 +11,58 @@ class GarmentsWizard {
             collar: 'crew'
         };
         
+        this.threeViewer = null;
         this.init();
     }
 
-    init() {
+    async init() {
         this.initEventListeners();
         this.updateProgressBar();
         this.updateCurrentConfig();
+        await this.init3DViewer();
+    }
+
+    async init3DViewer() {
+        try {
+            // Charger Three.js dynamiquement
+            await this.loadThreeJS();
+            
+            this.threeViewer = new ThreeJSViewer('three-canvas');
+            
+            // Redimensionnement responsive
+            window.addEventListener('resize', () => {
+                if (this.threeViewer) {
+                    this.threeViewer.onResize();
+                }
+            });
+            
+            console.log('✅ Three.js viewer initialized');
+        } catch (error) {
+            console.error('❌ Three.js initialization failed:', error);
+        }
+    }
+
+    async loadThreeJS() {
+        return new Promise((resolve, reject) => {
+            if (window.THREE && window.OrbitControls) {
+                resolve();
+                return;
+            }
+
+            // Charger Three.js depuis CDN
+            const threeScript = document.createElement('script');
+            threeScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js';
+            threeScript.onload = () => {
+                // Charger OrbitControls
+                const orbitScript = document.createElement('script');
+                orbitScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js';
+                orbitScript.onload = resolve;
+                orbitScript.onerror = reject;
+                document.head.appendChild(orbitScript);
+            };
+            threeScript.onerror = reject;
+            document.head.appendChild(threeScript);
+        });
     }
 
     initEventListeners() {
@@ -139,6 +182,11 @@ class GarmentsWizard {
         document.getElementById('current-fit').textContent = this.config.fit.toUpperCase();
         document.getElementById('current-neckline').textContent = 
             `${this.getCollarDisplayName(this.config.collar)} (${this.config.neckline}cm)`;
+        
+        // Mettre à jour la vue 3D
+        if (this.threeViewer) {
+            this.threeViewer.updateTshirt(this.config);
+        }
     }
 
     getCollarDisplayName(collar) {
@@ -158,29 +206,45 @@ class GarmentsWizard {
             generateBtn.disabled = true;
             generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
 
-            // Simulation de génération
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Appel API vers le backend
+            const response = await fetch('http://localhost:8000/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sleeve: this.config.sleeveLength,
+                    torso: this.config.torsoLength, 
+                    neck: this.config.neckline,
+                    fit: this.config.fit,
+                    collar: this.config.collar
+                })
+            });
+
+            if (!response.ok) throw new Error('API error');
             
-            // Ici, tu intégreras l'appel API vers ton backend
-            console.log('Configuration à envoyer:', this.config);
+            const result = await response.json();
             
-            // Success animation
-            generateBtn.innerHTML = '<i class="fas fa-check"></i> Pattern Generated!';
-            generateBtn.style.background = 'linear-gradient(135deg, var(--success), #059669)';
+            if (result.status === 'success') {
+                // Téléchargement automatique
+                window.open(`http://localhost:8000${result.file_url}`, '_blank');
+                
+                generateBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                generateBtn.style.background = 'linear-gradient(135deg, var(--success), #059669)';
+            } else {
+                throw new Error(result.message);
+            }
             
+        } catch (error) {
+            console.error('Generation error:', error);
+            generateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+            alert('Error: ' + error.message);
+        } finally {
             setTimeout(() => {
                 generateBtn.innerHTML = originalText;
                 generateBtn.disabled = false;
                 generateBtn.style.background = '';
-            }, 2000);
-
-        } catch (error) {
-            console.error('Generation error:', error);
-            generateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
-            setTimeout(() => {
-                generateBtn.innerHTML = originalText;
-                generateBtn.disabled = false;
-            }, 2000);
+            }, 3000);
         }
     }
 }
