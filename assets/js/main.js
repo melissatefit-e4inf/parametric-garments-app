@@ -1,3 +1,8 @@
+const API_BASE = location.hostname.includes('github.io')
+  ? 'https://presystolic-ann-quintic.ngrok-free.dev' // <- ton URL ngrok actuelle
+  : 'http://localhost:8000';
+
+
 class GarmentsWizard {
     constructor() {
         this.currentStep = 1;
@@ -198,56 +203,51 @@ class GarmentsWizard {
         return names[collar] || collar;
     }
 
-    async generatePattern() {
-        const generateBtn = document.getElementById('generate-btn');
-        const originalText = generateBtn.innerHTML;
-        
-        try {
-            generateBtn.disabled = true;
-            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    
+async generatePattern() {
+  const generateBtn = document.getElementById('generate-btn');
+  const originalText = generateBtn.innerHTML;
 
-            // Appel API vers le backend
-            const response = await fetch('http://localhost:8000/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    sleeve: this.config.sleeveLength,
-                    torso: this.config.torsoLength, 
-                    neck: this.config.neckline,
-                    fit: this.config.fit,
-                    collar: this.config.collar
-                })
-            });
+  try {
+    generateBtn.disabled = true;
+    generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
 
-            if (!response.ok) throw new Error('API error');
-            
-            const result = await response.json();
-            
-            if (result.status === 'success') {
-                // Téléchargement automatique
-                window.open(`http://localhost:8000${result.file_url}`, '_blank');
-                
-                generateBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
-                generateBtn.style.background = 'linear-gradient(135deg, var(--success), #059669)';
-            } else {
-                throw new Error(result.message);
-            }
-            
-        } catch (error) {
-            console.error('Generation error:', error);
-            generateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
-            alert('Error: ' + error.message);
-        } finally {
-            setTimeout(() => {
-                generateBtn.innerHTML = originalText;
-                generateBtn.disabled = false;
-                generateBtn.style.background = '';
-            }, 3000);
-        }
+    const response = await fetch(`${API_BASE}/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sleeve: this.config.sleeveLength,
+        torso: this.config.torsoLength,
+        neck: this.config.neckline,
+        fit: this.config.fit,
+        collar: this.config.collar
+      })
+    });
+
+    if (!response.ok) throw new Error(`API ${response.status}`);
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      window.open(`${API_BASE}${result.file_url}`, '_blank'); // <-- plus de localhost
+      generateBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+      generateBtn.style.background = 'linear-gradient(135deg, var(--success), #059669)';
+    } else {
+      throw new Error(result.message || 'Unknown error');
     }
+  } catch (error) {
+    console.error('Generation error:', error);
+    generateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+    alert('Error: ' + error.message);
+  } finally {
+    setTimeout(() => {
+      generateBtn.innerHTML = originalText;
+      generateBtn.disabled = false;
+      generateBtn.style.background = '';
+    }, 3000);
+  }
 }
+
 
 // Fonctions globales pour la navigation
 function nextStep(step) {
