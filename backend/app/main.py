@@ -14,6 +14,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://melissatefit-e4inf.github.io",
+        "https://*.github.io",  # ← Autorise tous les sites GitHub Pages
         "https://presystolic-ann-quintic.ngrok-free.dev",
     ],
     allow_methods=["*"],
