@@ -1,6 +1,6 @@
 const API_BASE = location.hostname.includes('github.io')
-  ? 'https://presystolic-ann-quintic.ngrok-free.dev'
-  : 'http://localhost:8000';
+  ? 'https://presystolic-ann-quintic.ngrok-free.dev' // Garde l'ancienne URL
+  : 'http://localhost:8001'; // ← CHANGE 8000 en 8001
 
 class GarmentsWizard {
     constructor() {
