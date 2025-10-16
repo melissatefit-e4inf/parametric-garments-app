@@ -12,10 +12,14 @@ app = FastAPI()
 # Autoriser le front-end à communiquer avec le backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://melissatefit-e4inf.github.io",
+        "https://presystolic-ann-quintic.ngrok-free.dev",
+    ],
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
+
 
 # Modèle des paramètres du T-shirt
 class TshirtParams(BaseModel):
