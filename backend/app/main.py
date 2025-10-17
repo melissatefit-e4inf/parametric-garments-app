@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import os
@@ -10,16 +11,14 @@ from reportlab.lib.units import cm
 app = FastAPI()
 
 # Autoriser le front-end à communiquer avec le backend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://melissatefit-e4inf.github.io",
-        "https://*.github.io",  # ← Autorise tous les sites GitHub Pages
-        "https://presystolic-ann-quintic.ngrok-free.dev",
-    ],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.middleware("http")
+async def add_ngrok_headers(request: Request, call_next):
+    response = await call_next(request)
+    # Ces headers suppriment l'avertissement ngrok
+    response.headers["ngrok-skip-browser-warning"] = "any"
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
 
 
 # Modèle des paramètres du T-shirt
