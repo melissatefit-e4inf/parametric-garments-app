@@ -1,6 +1,6 @@
 const API_BASE = location.hostname.includes('github.io')
-  ? 'https://presystolic-ann-quintic.ngrok-free.dev' // Garde l'ancienne URL
-  : 'http://localhost:8001'; // ← CHANGE 8000 en 8001
+  ? 'https://presystolic-ann-quintic.ngrok-free.dev'
+  : 'http://localhost:8000'; // ← REMET 8000 (pas 8001)
 
 class GarmentsWizard {
     constructor() {
@@ -54,7 +54,7 @@ class GarmentsWizard {
             threeScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js';
             threeScript.onload = () => {
                 const orbitScript = document.createElement('script');
-                orbitScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js';
+                orbitScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js'; // ← CORRIGE js → jsm
                 orbitScript.onload = resolve;
                 orbitScript.onerror = reject;
                 document.head.appendChild(orbitScript);
@@ -192,34 +192,40 @@ class GarmentsWizard {
     async generatePattern() {
         const generateBtn = document.getElementById('generate-btn');
         const originalText = generateBtn.innerHTML;
-
+        
         try {
             generateBtn.disabled = true;
             generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
 
+            // ⭐⭐ UTILISE API_BASE ⭐⭐
             const response = await fetch(`${API_BASE}/generate`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify({
                     sleeve: this.config.sleeveLength,
-                    torso: this.config.torsoLength,
+                    torso: this.config.torsoLength, 
                     neck: this.config.neckline,
                     fit: this.config.fit,
                     collar: this.config.collar
                 })
             });
 
-            if (!response.ok) throw new Error(`API ${response.status}`);
-
+            if (!response.ok) throw new Error('API error');
+            
             const result = await response.json();
-
+            
             if (result.status === 'success') {
+                // Téléchargement automatique
                 window.open(`${API_BASE}${result.file_url}`, '_blank');
+                
                 generateBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 generateBtn.style.background = 'linear-gradient(135deg, var(--success), #059669)';
             } else {
-                throw new Error(result.message || 'Unknown error');
+                throw new Error(result.message);
             }
+            
         } catch (error) {
             console.error('Generation error:', error);
             generateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
@@ -234,6 +240,7 @@ class GarmentsWizard {
     }
 }
 
+// Fonctions globales pour la navigation
 function nextStep(step) {
     window.garmentsApp.nextStep(step);
 }
@@ -242,6 +249,7 @@ function prevStep(step) {
     window.garmentsApp.prevStep(step);
 }
 
+// Initialiser l'application
 document.addEventListener('DOMContentLoaded', () => {
     window.garmentsApp = new GarmentsWizard();
 });
