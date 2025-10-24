@@ -1,0 +1,16 @@
+{
+  "name": "parametric-garments-frontend",
+  "version": "1.0.0",
+  "description": "Frontend pour l'application de vêtements paramétriques",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'No build step needed for now'"
+  },
+  "author": "Ton Nom",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.158.0"
+  },
+  "devDependencies": {}
+}

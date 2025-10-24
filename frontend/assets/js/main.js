@@ -14,7 +14,6 @@ class GarmentsWizard {
             neckline: 8,
             collar: 'crew'
         };
-        
         this.threeViewer = null;
         this.init();
     }
@@ -30,13 +29,11 @@ class GarmentsWizard {
         try {
             await this.loadThreeJS();
             this.threeViewer = new ThreeJSViewer('three-canvas');
-            
+
             window.addEventListener('resize', () => {
-                if (this.threeViewer) {
-                    this.threeViewer.onResize();
-                }
+                if (this.threeViewer) this.threeViewer.onResize();
             });
-            
+
             console.log('✅ Three.js viewer initialized');
         } catch (error) {
             console.error('❌ Three.js initialization failed:', error);
@@ -45,16 +42,13 @@ class GarmentsWizard {
 
     async loadThreeJS() {
         return new Promise((resolve, reject) => {
-            if (window.THREE && window.OrbitControls) {
-                resolve();
-                return;
-            }
+            if (window.THREE && window.OrbitControls) return resolve();
 
             const threeScript = document.createElement('script');
             threeScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js';
             threeScript.onload = () => {
                 const orbitScript = document.createElement('script');
-                orbitScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js'; // ← CORRIGE js → jsm
+                orbitScript.src = 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js';
                 orbitScript.onload = resolve;
                 orbitScript.onerror = reject;
                 document.head.appendChild(orbitScript);
@@ -65,36 +59,21 @@ class GarmentsWizard {
     }
 
     initEventListeners() {
-        document.getElementById('sleeve-length').addEventListener('input', (e) => {
-            this.config.sleeveLength = parseInt(e.target.value);
-            this.updateDisplayValue('sleeve-length-val', `SHORT (${e.target.value}cm)`);
-            this.updateSummary();
-            this.updateCurrentConfig();
-        });
-
-        document.getElementById('sleeve-opening').addEventListener('input', (e) => {
-            this.config.sleeveOpening = parseInt(e.target.value);
-            this.updateDisplayValue('sleeve-opening-val', `REGULAR (${e.target.value}cm)`);
-            this.updateSummary();
-            this.updateCurrentConfig();
-        });
-
-        document.getElementById('torso-length').addEventListener('input', (e) => {
-            this.config.torsoLength = parseInt(e.target.value);
-            this.updateDisplayValue('torso-length-val', `REGULAR (${e.target.value}cm)`);
-            this.updateSummary();
-            this.updateCurrentConfig();
-        });
-
-        document.getElementById('neckline').addEventListener('input', (e) => {
-            this.config.neckline = parseInt(e.target.value);
-            this.updateDisplayValue('neckline-val', `ROUND (${e.target.value}cm)`);
-            this.updateSummary();
-            this.updateCurrentConfig();
-        });
+        const updateRange = (id, displayId, label) => {
+            document.getElementById(id).addEventListener('input', (e) => {
+                this.config[id.replace('-', '')] = parseInt(e.target.value);
+                this.updateDisplayValue(displayId, `${label} (${e.target.value}cm)`);
+                this.updateSummary();
+                this.updateCurrentConfig();
+            });
+        };
+        updateRange('sleeve-length', 'sleeve-length-val', 'SHORT');
+        updateRange('sleeve-opening', 'sleeve-opening-val', 'REGULAR');
+        updateRange('torso-length', 'torso-length-val', 'REGULAR');
+        updateRange('neckline', 'neckline-val', 'ROUND');
 
         document.querySelectorAll('.fit-option').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', () => {
                 document.querySelectorAll('.fit-option').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.config.fit = btn.dataset.value;
@@ -104,7 +83,7 @@ class GarmentsWizard {
         });
 
         document.querySelectorAll('.collar-option').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', () => {
                 document.querySelectorAll('.collar-option').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 this.config.collar = btn.dataset.value;
@@ -113,9 +92,7 @@ class GarmentsWizard {
             });
         });
 
-        document.getElementById('generate-btn').addEventListener('click', () => {
-            this.generatePattern();
-        });
+        document.getElementById('generate-btn').addEventListener('click', () => this.generatePattern());
     }
 
     nextStep(step) {
@@ -131,21 +108,14 @@ class GarmentsWizard {
     }
 
     showStep(step) {
-        document.querySelectorAll('.step-content').forEach(content => {
-            content.classList.remove('active');
-        });
-
+        document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
         document.querySelector(`.step-content[data-step="${step}"]`).classList.add('active');
 
         document.querySelectorAll('.step').forEach((stepEl, index) => {
             const stepNumber = index + 1;
             stepEl.classList.remove('active', 'completed');
-            
-            if (stepNumber === step) {
-                stepEl.classList.add('active');
-            } else if (stepNumber < step) {
-                stepEl.classList.add('completed');
-            }
+            if (stepNumber === step) stepEl.classList.add('active');
+            else if (stepNumber < step) stepEl.classList.add('completed');
         });
     }
 
@@ -174,58 +144,63 @@ class GarmentsWizard {
         document.getElementById('current-fit').textContent = this.config.fit.toUpperCase();
         document.getElementById('current-neckline').textContent = 
             `${this.getCollarDisplayName(this.config.collar)} (${this.config.neckline}cm)`;
-        
-        if (this.threeViewer) {
-            this.threeViewer.updateTshirt(this.config);
-        }
+
+        if (this.threeViewer) this.threeViewer.updateTshirt(this.config);
     }
 
     getCollarDisplayName(collar) {
-        const names = {
+        return {
             'crew': 'Crew Neck',
             'vneck': 'V-Neck',
             'round': 'Round Neck'
-        };
-        return names[collar] || collar;
+        }[collar] || collar;
     }
 
     async generatePattern() {
         const generateBtn = document.getElementById('generate-btn');
         const originalText = generateBtn.innerHTML;
-        
+        const format = document.querySelector('input[name="format"]:checked').value; // SVG ou PDF
+
         try {
             generateBtn.disabled = true;
             generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
 
-            // ⭐⭐ UTILISE API_BASE ⭐⭐
             const response = await fetch(`${API_BASE}/generate`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     sleeve: this.config.sleeveLength,
-                    torso: this.config.torsoLength, 
+                    torso: this.config.torsoLength,
                     neck: this.config.neckline,
                     fit: this.config.fit,
-                    collar: this.config.collar
+                    collar: this.config.collar,
+                    format: format
                 })
             });
 
             if (!response.ok) throw new Error('API error');
-            
-            const result = await response.json();
-            
-            if (result.status === 'success') {
-                // Téléchargement automatique
-                window.open(`${API_BASE}${result.file_url}`, '_blank');
-                
-                generateBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
-                generateBtn.style.background = 'linear-gradient(135deg, var(--success), #059669)';
+
+            const contentType = response.headers.get('content-type');
+
+            if (contentType.includes('application/json')) {
+                const result = await response.json();
+                if (result.status === 'success') window.open(`${API_BASE}${result.file_url}`, '_blank');
+                else throw new Error(result.message);
             } else {
-                throw new Error(result.message);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = format === 'pdf' ? 'pattern.pdf' : 'pattern.svg';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
             }
-            
+
+            generateBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+            generateBtn.style.background = 'linear-gradient(135deg, var(--success), #059669)';
+
         } catch (error) {
             console.error('Generation error:', error);
             generateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
@@ -241,15 +216,10 @@ class GarmentsWizard {
 }
 
 // Fonctions globales pour la navigation
-function nextStep(step) {
-    window.garmentsApp.nextStep(step);
-}
+function nextStep(step) { window.garmentsApp.nextStep(step); }
+function prevStep(step) { window.garmentsApp.prevStep(step); }
 
-function prevStep(step) {
-    window.garmentsApp.prevStep(step);
-}
-
-// Initialiser l'application
+// Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     window.garmentsApp = new GarmentsWizard();
 });
